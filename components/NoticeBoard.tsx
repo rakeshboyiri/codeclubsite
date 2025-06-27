@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react'
 import { Notice, PaginatedNotices } from '@/types/notice'
 import { getNotices, getNoticeTags } from '@/lib/noticeActions'
 import Link from 'next/link'
-import { io, Socket } from 'socket.io-client'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function NoticeBoard() {
@@ -26,18 +25,6 @@ export default function NoticeBoard() {
   useEffect(() => {
     fetchNotices()
     fetchTags()
-
-    const socket: Socket = io()
-    socket.on('noticeCreated', handleNoticeUpdate)
-    socket.on('noticeUpdated', handleNoticeUpdate)
-    socket.on('noticeDeleted', handleNoticeUpdate)
-
-    return () => {
-      socket.off('noticeCreated', handleNoticeUpdate)
-      socket.off('noticeUpdated', handleNoticeUpdate)
-      socket.off('noticeDeleted', handleNoticeUpdate)
-      socket.disconnect()
-    }
   }, [currentPage, category, searchTerm])
 
   const fetchNotices = async () => {
@@ -63,10 +50,6 @@ export default function NoticeBoard() {
     }
   }
 
-  const handleNoticeUpdate = () => {
-    fetchNotices()
-  }
-
   const handleCategoryChange = (value: string) => {
     setCategory(value === 'all' ? '' : value)
     setCurrentPage(1)
@@ -85,7 +68,6 @@ export default function NoticeBoard() {
   if (error) {
     return (
       <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error}</AlertDescription>
       </Alert>

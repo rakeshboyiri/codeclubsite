@@ -67,20 +67,30 @@ export async function createBlog(formData: FormData): Promise<Blog> {
     seoTitle: formData.get('seoTitle') as string,
     seoDescription: formData.get('seoDescription') as string,
     seoKeywords: (formData.get('seoKeywords') as string).split(',').map(keyword => keyword.trim()),
-    imageUrl: '',
+    imageUrl: formData.get('imageUrl') as string,
     
   }
+  console.log(blogData)
 
-  const image = formData.get('image') as File
-  if (image) {
-    const imageBuffer = await image.arrayBuffer()
-    const imageData = new Uint8Array(imageBuffer)
-    const imageResult = await db.collection('images').insertOne({
-      data: imageData,
-      contentType: image.type,
-    })
-    blogData.imageUrl = `/api/images/${imageResult.insertedId}`
-  }
+  // // Handle image upload more safely
+  // const image = formData.get("image") as File
+  // console.log(image)
+  // // if (image && image.size > 0 && image.name !== "undefined") {
+  // //   try {
+  // //     const imageBuffer = await image.arrayBuffer()
+  // //     const imageData = new Uint8Array(imageBuffer)
+  // //     const imageResult = await db.collection("images").insertOne({
+  // //       data: imageData,
+  // //       contentType: image.type,
+  // //       filename: image.name,
+  // //       uploadedAt: new Date(),
+  // //     })
+  // //     blogData.imageUrl = `/api/images/${imageResult.insertedId}`
+  // //   } catch (error) {
+  // //     console.error("Error uploading image:", error)
+  // //     // Continue without image if upload fails
+  // //   }
+  // // }
 
   const result = await db.collection('blogs').insertOne(blogData)
   return { 
@@ -90,6 +100,7 @@ export async function createBlog(formData: FormData): Promise<Blog> {
     updatedAt: blogData.updatedAt.toISOString() 
   } as Blog
 }
+
 
 export async function updateBlog(id: string, formData: FormData): Promise<Blog> {
   const client = await clientPromise
