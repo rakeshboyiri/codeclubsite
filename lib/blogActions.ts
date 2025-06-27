@@ -70,28 +70,6 @@ export async function createBlog(formData: FormData): Promise<Blog> {
     imageUrl: formData.get('imageUrl') as string,
     
   }
-  console.log(blogData)
-
-  // // Handle image upload more safely
-  // const image = formData.get("image") as File
-  // console.log(image)
-  // // if (image && image.size > 0 && image.name !== "undefined") {
-  // //   try {
-  // //     const imageBuffer = await image.arrayBuffer()
-  // //     const imageData = new Uint8Array(imageBuffer)
-  // //     const imageResult = await db.collection("images").insertOne({
-  // //       data: imageData,
-  // //       contentType: image.type,
-  // //       filename: image.name,
-  // //       uploadedAt: new Date(),
-  // //     })
-  // //     blogData.imageUrl = `/api/images/${imageResult.insertedId}`
-  // //   } catch (error) {
-  // //     console.error("Error uploading image:", error)
-  // //     // Continue without image if upload fails
-  // //   }
-  // // }
-
   const result = await db.collection('blogs').insertOne(blogData)
   return { 
     ...blogData, 
