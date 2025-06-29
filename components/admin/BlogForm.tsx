@@ -9,6 +9,7 @@ import { createBlog, updateBlog } from "@/lib/blogActions"
 interface BlogFormProps {
   blog?: Blog
   categories?: string[]
+  onSuccess?: () => void
 }
 
 export default function BlogForm({ blog, categories = [] }: BlogFormProps) {
@@ -24,6 +25,8 @@ export default function BlogForm({ blog, categories = [] }: BlogFormProps) {
     seoDescription: blog?.seoDescription || "",
     seoKeywords: blog?.seoKeywords?.join(", ") || "",
     imageUrl: "",
+    createdAt: blog?.createdAt || "",
+    updatedAt: blog?.updatedAt || "",
   })
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
@@ -91,6 +94,7 @@ export default function BlogForm({ blog, categories = [] }: BlogFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log("1")
+    console.log(formData)
     e.preventDefault()
     setError("")
     setIsSubmitting(true)
@@ -126,20 +130,25 @@ export default function BlogForm({ blog, categories = [] }: BlogFormProps) {
 
       // Add all form fields including the updated imageUrl
       const updatedFormData = { ...formData, imageUrl }
-      console.log(updatedFormData)
+      // console.log(updatedFormData)
       Object.entries(updatedFormData).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {
           formDataToSend.append(key.toString(), value.toString())
         }
-      })
+      })  
 
      
-      await createBlog(formDataToSend)
+
+      if (blog) {
+        await updateBlog(blog._id, formDataToSend)
+      } else {
+        await createBlog(formDataToSend)
+      }
       // console.log(formData)
       // console.log(formDataToSend[0])
-      // for (let pair of formDataToSend.entries()) {
-      //   console.log(`${pair[0]}: ${pair[1]}`)
-      // }
+      for (let pair of formDataToSend.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`)
+      }
       
       router.push("/admin/blogs")
     } catch (err) {
@@ -328,7 +337,7 @@ export default function BlogForm({ blog, categories = [] }: BlogFormProps) {
           disabled={isSubmitting || isUploadingImage}
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isUploadingImage ? "Uploading Image..." : isSubmitting ? "Saving..." : blog ? "Update Blog" : "Create Blog"}
+          {isUploadingImage ? "Uploading Image..." : isSubmitting ? "Saving..." : blog ? "Update Blogs" : "Create Blog"}
         </button>
       </div>
     </form>

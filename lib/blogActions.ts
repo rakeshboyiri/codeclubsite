@@ -95,21 +95,21 @@ export async function updateBlog(id: string, formData: FormData): Promise<Blog> 
     seoTitle: formData.get('seoTitle') as string,
     seoDescription: formData.get('seoDescription') as string,
     seoKeywords: (formData.get('seoKeywords') as string).split(',').map(keyword => keyword.trim()),
-    imageUrl: '', 
-    createdAt: new Date().toISOString(),
+    imageUrl: formData.get('imageUrl') as string, 
+    createdAt: formData.get('createdAt') as string,
     // updatedAt: new Date().toISOString(),
   }
 
-  const image = formData.get('image') as File
-  if (image) {
-    const imageBuffer = await image.arrayBuffer()
-    const imageData = new Uint8Array(imageBuffer)
-    const imageResult = await db.collection('images').insertOne({
-      data: imageData,
-      contentType: image.type,
-    })
-    blogData.imageUrl = `/api/images/${imageResult.insertedId}`
-  }
+  // const image = formData.get('image') as File
+  // if (image) {
+  //   const imageBuffer = await image.arrayBuffer()
+  //   const imageData = new Uint8Array(imageBuffer)
+  //   const imageResult = await db.collection('images').insertOne({
+  //     data: imageData,
+  //     contentType: image.type,
+  //   })
+  //   blogData.imageUrl = `/api/images/${imageResult.insertedId}`
+  // }
 
   await db.collection('blogs').updateOne(
     { _id: new ObjectId(id) },
